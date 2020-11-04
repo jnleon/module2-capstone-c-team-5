@@ -8,6 +8,9 @@ namespace TenmoClient
     {
         private static readonly ConsoleService consoleService = new ConsoleService();
         private static readonly AuthService authService = new AuthService();
+        private static readonly AccountServices accountServices = new AccountServices();
+        private static readonly ServicesThings servicesThings = new ServicesThings();
+
 
         static void Main(string[] args)
         {
@@ -86,10 +89,36 @@ namespace TenmoClient
                 }
                 else if (menuSelection == 1)
                 {
+                    Account account = accountServices.GetAccount();
+                    Console.WriteLine("Your account balance is:" + account.Balance); 
 
                 }
                 else if (menuSelection == 2)
                 {
+                   List<User> users = servicesThings.GetUsers();
+                    Console.WriteLine("-------------------------------------------\nUsers");
+                    Console.WriteLine(String.Format("{0, 0}\t|  {1,-18} ", "ID", "NAME"));
+                    Console.WriteLine("-------------------------------------------");
+
+                    foreach (User user in users)
+                    {
+                        Console.WriteLine(String.Format("{0, 0}\t|  {1,-18} ", user.UserId, user.Username));
+
+                    }
+                    Console.WriteLine("-------------------------------------------\n");
+
+                    Console.WriteLine("Enter ID of user you are sending to(0 to cancel");
+                    //WHILE
+                    //TRY CATCH 
+                    //EXCPETION
+                    var input = Console.ReadLine();
+                    
+                    
+                    Console.WriteLine("Enter amount:");
+                    //WHILE
+                    //TRY CATCH 
+                    //EXCPETION
+                    var input1 = Console.ReadLine();
 
                 }
                 else if (menuSelection == 3)

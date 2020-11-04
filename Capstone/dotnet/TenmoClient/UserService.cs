@@ -1,9 +1,14 @@
-﻿using TenmoClient.Data;
+﻿using RestSharp;
+using RestSharp.Authenticators;
+using System.Collections.Generic;
+using TenmoClient.Data;
+using TenmoServer.Models;
 
 namespace TenmoClient
 {
     public static class UserService
     {
+       
         private static API_User user = new API_User();
 
         public static void SetLogin(API_User u)
@@ -26,4 +31,6 @@ namespace TenmoClient
             return user?.Token ?? string.Empty;
         }
     }
+   
+    
 }
