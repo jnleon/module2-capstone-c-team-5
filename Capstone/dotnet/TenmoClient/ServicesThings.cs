@@ -8,6 +8,7 @@ namespace TenmoClient.Data
 {
     public class ServicesThings
     {
+        //Katie Dwyer liked this name - reference: Stranger Things
 
         private readonly static string API_BASE_URL = "https://localhost:44315/";
         private readonly IRestClient client = new RestClient();
@@ -21,9 +22,7 @@ namespace TenmoClient.Data
 
                 IRestResponse<List<User>> response = client.Get<List<User>>(request);
                 return response.Data;
-
             }
-
         }
     }
 

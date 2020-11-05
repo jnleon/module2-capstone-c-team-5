@@ -8,7 +8,6 @@ namespace TenmoClient.Data
 {
     public class AccountServices
     {
-
         private readonly static string API_BASE_URL = "https://localhost:44315/";
         private readonly IRestClient client = new RestClient();
 
@@ -20,7 +19,6 @@ namespace TenmoClient.Data
 
             IRestResponse<Account> response = client.Get<Account>(request);
             return response.Data;
-
         }
 
     }

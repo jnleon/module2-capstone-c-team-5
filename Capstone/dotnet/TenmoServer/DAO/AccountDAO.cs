@@ -41,6 +41,7 @@ namespace TenmoServer.DAO
             }
             return accounts;
         }
+
         public Account GetAccountInfoById(int userId)
         {
             Account account = new Account();

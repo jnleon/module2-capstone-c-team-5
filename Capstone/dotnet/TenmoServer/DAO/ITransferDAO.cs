@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TenmoServer.Models;
 
 namespace TenmoServer.DAO
 {
-    public class ITransferDAO
+    public interface ITransferDAO
     {
-    
-    
+        decimal MakeTransfer(decimal amountToTransfer, Account sender, Account receiver);
+        List<Transfer> GetPastTransfers(int userId);
     }
 }

@@ -12,27 +12,30 @@ namespace TenmoServer.Controllers
     [Route("[controller]")]
     [ApiController]
     [Authorize]
-    public class AccountController : Controller
+    public class TransferController : Controller
     {
+        private readonly ITransferDAO transferDAO;
         private readonly IAccountDAO accountDAO;
 
-        public AccountController(IAccountDAO _accountDAO)
+        public TransferController(ITransferDAO _transferDAO, IAccountDAO _accountDAO)
         {
+            transferDAO = _transferDAO;
             accountDAO = _accountDAO;
         }
-       
-        //ADMINNNN
-        //dont need :)
-        [HttpGet("all")]
-        public List<Account> GetAccounts()
+
+        [HttpPost]
+        public decimal TransferFunds(Transfer transfer)
         {
-            return accountDAO.GetAccountInfo();
+            Account sender = accountDAO.GetAccountInfoById(transfer.UserFromId);
+            Account receiver = accountDAO.GetAccountInfoById(transfer.UserToId);
+
+            return transferDAO.MakeTransfer(transfer.Amount, sender, receiver);
         }
 
-        [HttpGet("")]
-        public Account GetMyAccountBalance()
+        [HttpGet]
+        public List<Transfer> GetTransfers()
         {
-            return accountDAO.GetAccountInfoById((int)GetCurrentUserId());
+            return transferDAO.GetPastTransfers((int)GetCurrentUserId());
         }
         private int? GetCurrentUserId()
         {

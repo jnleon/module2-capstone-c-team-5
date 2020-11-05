@@ -9,8 +9,10 @@ namespace TenmoClient.Data
         public int TransferId { get; set; }
         public int TransferTypeId { get; set; }
         public int TransferStatusId { get; set; }
-        public int AccountFrom { get; set; }
-        public int AccountTo { get; set; }
+        public int UserFromId { get; set; }
+        public int UserToId { get; set; }
         public decimal Amount { get; set; }
+        public string UserNameFrom { get; set; }
+        public string UserNameTo { get; set; }
     }
 }

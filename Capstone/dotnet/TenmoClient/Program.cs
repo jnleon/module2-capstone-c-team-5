@@ -10,7 +10,7 @@ namespace TenmoClient
         private static readonly AuthService authService = new AuthService();
         private static readonly AccountServices accountServices = new AccountServices();
         private static readonly ServicesThings servicesThings = new ServicesThings();
-
+        private static readonly TransferServices transferServices = new TransferServices();
 
         static void Main(string[] args)
         {
@@ -73,10 +73,10 @@ namespace TenmoClient
             {
                 Console.WriteLine("");
                 Console.WriteLine("Welcome to TEnmo! Please make a selection: ");
-                Console.WriteLine("1: View your current balance");
-                Console.WriteLine("2: View your past transfers");
+                Console.WriteLine("1: View your current balance"); //#3 use case - view current balance
+                Console.WriteLine("2: View your past transfers"); //#5 use case - log to see past transfers sent/received
                 Console.WriteLine("3: View your pending requests");
-                Console.WriteLine("4: Send TE bucks");
+                Console.WriteLine("4: Send TE bucks"); //#4 use case - show list of users, enter userID to transfer to, call MakeTransfer method
                 Console.WriteLine("5: Request TE bucks");
                 Console.WriteLine("6: Log in as different user");
                 Console.WriteLine("0: Exit");
@@ -87,19 +87,39 @@ namespace TenmoClient
                 {
                     Console.WriteLine("Invalid input. Please enter only a number.");
                 }
-                else if (menuSelection == 1)
+                else if (menuSelection == 1)//view account balance 
                 {
                     Account account = accountServices.GetAccount();
-                    Console.WriteLine("Your account balance is:" + account.Balance); 
+                    Console.WriteLine("Your account balance is: " + account.Balance); 
 
                 }
-                else if (menuSelection == 2)
+                else if (menuSelection == 2)//get list of past transfers pertaining to my id
                 {
-                   List<User> users = servicesThings.GetUsers();
+                    List<Transfer> t = transferServices.GetTransfers();
+                    foreach(Transfer transfer in t)
+                    {
+                        if(transfer.UserFromId == UserService.GetUserId())
+                        {
+                            Console.WriteLine($"{transfer.UserToId} To: {transfer.UserNameTo} {transfer.Amount}");
+                        }
+                        else if(transfer.UserToId == UserService.GetUserId())
+                        {
+                            Console.WriteLine($"{transfer.UserFromId} From: {transfer.UserNameFrom} {transfer.Amount}");
+                        }                                              
+                    }               
+                }
+                else if (menuSelection == 3)
+                {
+
+                }
+                else if (menuSelection == 4)//Transfer funds
+                {
+                    List<User> users = servicesThings.GetUsers();
                     Console.WriteLine("-------------------------------------------\nUsers");
                     Console.WriteLine(String.Format("{0, 0}\t|  {1,-18} ", "ID", "NAME"));
                     Console.WriteLine("-------------------------------------------");
 
+                    //prints the list of each user and their ID number
                     foreach (User user in users)
                     {
                         Console.WriteLine(String.Format("{0, 0}\t|  {1,-18} ", user.UserId, user.Username));
@@ -111,23 +131,15 @@ namespace TenmoClient
                     //WHILE
                     //TRY CATCH 
                     //EXCPETION
-                    var input = Console.ReadLine();
-                    
-                    
+                    var recipientID = int.Parse(Console.ReadLine());
+
                     Console.WriteLine("Enter amount:");
                     //WHILE
                     //TRY CATCH 
                     //EXCPETION
-                    var input1 = Console.ReadLine();
+                    var inputAmount = decimal.Parse(Console.ReadLine());
 
-                }
-                else if (menuSelection == 3)
-                {
-
-                }
-                else if (menuSelection == 4)
-                {
-
+                    transferServices.TransferMoney(recipientID, inputAmount);
                 }
                 else if (menuSelection == 5)
                 {
