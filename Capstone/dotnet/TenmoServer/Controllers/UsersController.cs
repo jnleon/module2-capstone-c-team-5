@@ -26,9 +26,5 @@ namespace TenmoServer.Controllers
         {
             return userDAO.GetUsers();
         }
-
-
-
-
     }
 }

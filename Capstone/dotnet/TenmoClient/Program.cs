@@ -91,22 +91,29 @@ namespace TenmoClient
                 {
                     Account account = accountServices.GetAccount();
                     Console.WriteLine("Your account balance is: " + account.Balance); 
-
                 }
                 else if (menuSelection == 2)//get list of past transfers pertaining to my id
                 {
+                    Console.WriteLine("\n-------------------------------------------\nTransfers");
+                    Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", "ID", "FROM/TO", "|  Amount"));
+                    Console.WriteLine("-------------------------------------------");
                     List<Transfer> t = transferServices.GetTransfers();
                     foreach(Transfer transfer in t)
                     {
                         if(transfer.UserFromId == UserService.GetUserId())
                         {
-                            Console.WriteLine($"{transfer.UserToId} To: {transfer.UserNameTo} {transfer.Amount}");
+                            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", transfer.TransferId, "To: " + transfer.UserNameTo, "|  $" + transfer.Amount));
+                            //Console.WriteLine($"{transfer.UserToId} To: {transfer.UserNameTo} {transfer.Amount}");
                         }
                         else if(transfer.UserToId == UserService.GetUserId())
                         {
-                            Console.WriteLine($"{transfer.UserFromId} From: {transfer.UserNameFrom} {transfer.Amount}");
-                        }                                              
+                            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", transfer.TransferId, "From: " + transfer.UserNameFrom, "|  $" + transfer.Amount));
+                            // Console.WriteLine($"{transfer.UserFromId} From: {transfer.UserNameFrom} {transfer.Amount}");
+                        }
                     }               
+                        Console.WriteLine("-------------------------------------------\nPlease enter transfer ID to view details (0 to cancel):");
+                         var inputID = Console.ReadLine();
+
                 }
                 else if (menuSelection == 3)
                 {
@@ -123,11 +130,10 @@ namespace TenmoClient
                     foreach (User user in users)
                     {
                         Console.WriteLine(String.Format("{0, 0}\t|  {1,-18} ", user.UserId, user.Username));
-
                     }
                     Console.WriteLine("-------------------------------------------\n");
 
-                    Console.WriteLine("Enter ID of user you are sending to(0 to cancel");
+                    Console.WriteLine("Enter ID of user you are sending to(0 to cancel):");
                     //WHILE
                     //TRY CATCH 
                     //EXCPETION

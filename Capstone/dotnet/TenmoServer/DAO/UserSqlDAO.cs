@@ -56,7 +56,7 @@ namespace TenmoServer.DAO
                     conn.Open();
 
                     SqlCommand cmd = new SqlCommand("SELECT user_id, username, password_hash, salt FROM users", conn);
-                    //NOT SHOW YOURSELF 
+                  
                     //cmd.Parameters.AddWithValue("@userId", GetCurrentUserId());
 
                     SqlDataReader reader = cmd.ExecuteReader();
@@ -155,7 +155,6 @@ namespace TenmoServer.DAO
                 PasswordHash = Convert.ToString(reader["password_hash"]),
                 Salt = Convert.ToString(reader["salt"]),
             };
-
             return u;
         }
     }
