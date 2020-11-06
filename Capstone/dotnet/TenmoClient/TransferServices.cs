@@ -31,9 +31,18 @@ namespace TenmoClient
             {
                 Console.WriteLine("An error occurred communicating with the server.");
             }
+            
             else if (!response.IsSuccessful)
             {
-                Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode);
+               // Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode + response.Content);
+                if((int)response.StatusCode == 400)
+                {
+                    Console.WriteLine("An error response was received from the server. Can't input a NEGATIVE NUMBER.");
+                }
+                else if((int)response.StatusCode == 404)
+                {
+                    Console.WriteLine("An error response was received from the server. INVALID USER ID.");
+                }
             }
         }
 

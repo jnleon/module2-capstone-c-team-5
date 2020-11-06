@@ -17,41 +17,52 @@ namespace TenmoServer.DAO
         }
 
         //method to transfer money between users... reduce the sender's balance and increase the receiver's balance... return sender balance
+
+        //NO POWER -----------------------------------------------------------------------------------------
+        //ERROR POWER -----------------------------------------------------------------------------------------
+
         public decimal MakeTransfer(decimal amountToTransfer, Account sender, Account receiver)
         {
-            if(amountToTransfer <= sender.Balance)
+            if (receiver.AccountId != 0 && amountToTransfer <= sender.Balance)
             {
+                
                 sender.Balance -= amountToTransfer;
                 receiver.Balance += amountToTransfer;
-            }
 
-            try
-            {
-                using (SqlConnection conn = new SqlConnection(connectionString))
+                try
                 {
-                    conn.Open();
-                    SqlCommand cmd = new SqlCommand("UPDATE accounts SET balance = @senderBalance WHERE user_id = @senderId; " +
-                                                    "UPDATE accounts SET balance = @receiverBalance WHERE user_id = @receiverId; " +
-                                                    "INSERT transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                                                    "VALUES (2, 2, @accountFrom, @accountTo, @amount);", conn);
+                    using (SqlConnection conn = new SqlConnection(connectionString))
+                    {
+                        conn.Open();
+                        SqlCommand cmd = new SqlCommand("UPDATE accounts SET balance = @senderBalance WHERE user_id = @senderId; " +
+                                                        "UPDATE accounts SET balance = @receiverBalance WHERE user_id = @receiverId; " +
+                                                        "INSERT transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
+                                                        "VALUES (2, 2, @accountFrom, @accountTo, @amount);", conn);
 
-                    cmd.Parameters.AddWithValue("@senderBalance", sender.Balance);
-                    cmd.Parameters.AddWithValue("@receiverBalance", receiver.Balance);
-                    cmd.Parameters.AddWithValue("@senderId", sender.UserId);
-                    cmd.Parameters.AddWithValue("@receiverId", receiver.UserId);
+                        cmd.Parameters.AddWithValue("@senderBalance", sender.Balance);
+                        cmd.Parameters.AddWithValue("@receiverBalance", receiver.Balance);
+                        cmd.Parameters.AddWithValue("@senderId", sender.UserId);
+                        cmd.Parameters.AddWithValue("@receiverId", receiver.UserId);
 
-                    cmd.Parameters.AddWithValue("@accountFrom", sender.AccountId);
-                    cmd.Parameters.AddWithValue("@accountTo", receiver.AccountId);
-                    cmd.Parameters.AddWithValue("@amount", amountToTransfer);
+                        cmd.Parameters.AddWithValue("@accountFrom", sender.AccountId);
+                        cmd.Parameters.AddWithValue("@accountTo", receiver.AccountId);
+                        cmd.Parameters.AddWithValue("@amount", amountToTransfer);
 
-                    SqlDataReader reader = cmd.ExecuteReader();
+                        SqlDataReader reader = cmd.ExecuteReader();
+                    }
+                }
+                catch (SqlException)
+                {
+                    Console.WriteLine("Error getting account info");
                 }
             }
-            catch (SqlException)
+            else
             {
-                Console.WriteLine("Error getting account info");
-            }            
-            return sender.Balance;
+                
+                Console.WriteLine("Invalid Input");
+
+            }
+                return sender.Balance;
         }
 
         public List<Transfer> GetPastTransfers(int userId)

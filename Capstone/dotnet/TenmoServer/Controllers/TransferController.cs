@@ -24,10 +24,15 @@ namespace TenmoServer.Controllers
         }
 
         [HttpPost]
-        public decimal TransferFunds(Transfer transfer)
+        public ActionResult<decimal> TransferFunds(Transfer transfer)
         {
             Account sender = accountDAO.GetAccountInfoById(transfer.UserFromId);
             Account receiver = accountDAO.GetAccountInfoById(transfer.UserToId);
+
+            if(receiver.AccountId ==0 )
+            {
+                return NotFound();
+            } 
 
             return transferDAO.MakeTransfer(transfer.Amount, sender, receiver);
         }

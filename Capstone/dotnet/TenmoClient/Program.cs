@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TenmoClient.Data;
 
 namespace TenmoClient
@@ -90,7 +91,7 @@ namespace TenmoClient
                 else if (menuSelection == 1)//view account balance 
                 {
                     Account account = accountServices.GetAccount();
-                    Console.WriteLine("Your account balance is: " + account.Balance); 
+                    Console.WriteLine("Your account balance is: " + account.Balance);
                 }
                 else if (menuSelection == 2)//get list of past transfers pertaining to my id
                 {
@@ -98,23 +99,55 @@ namespace TenmoClient
                     Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", "ID", "FROM/TO", "|  Amount"));
                     Console.WriteLine("-------------------------------------------");
                     List<Transfer> t = transferServices.GetTransfers();
-                    foreach(Transfer transfer in t)
+                    foreach (Transfer transfer in t)
                     {
-                        if(transfer.UserFromId == UserService.GetUserId())
+                        if (transfer.UserFromId == UserService.GetUserId())
                         {
-                            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", transfer.TransferId, "To: " + transfer.UserNameTo, "|  $" + transfer.Amount));
-                            //Console.WriteLine($"{transfer.UserToId} To: {transfer.UserNameTo} {transfer.Amount}");
+                            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2:C} ", transfer.TransferId, "To: " + transfer.UserNameTo, "|  " + transfer.Amount.ToString("C2")));
                         }
-                        else if(transfer.UserToId == UserService.GetUserId())
+                        else if (transfer.UserToId == UserService.GetUserId())
                         {
-                            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", transfer.TransferId, "From: " + transfer.UserNameFrom, "|  $" + transfer.Amount));
-                            // Console.WriteLine($"{transfer.UserFromId} From: {transfer.UserNameFrom} {transfer.Amount}");
+                            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2:C} ", transfer.TransferId, "From: " + transfer.UserNameFrom, "|  " + transfer.Amount.ToString("C2")));
                         }
-                    }               
-                        Console.WriteLine("-------------------------------------------\nPlease enter transfer ID to view details (0 to cancel):");
-                         var inputID = Console.ReadLine();
+                    }
+                    Console.WriteLine("-------------------------------------------\nPlease enter transfer ID to view details (0 to cancel):");
+                    var inputID = int.Parse(Console.ReadLine());
 
+                    foreach (Transfer transfer in t)
+                    {
+                        if (inputID == transfer.TransferId)
+                        {
+                            Console.WriteLine("--------------------------------------------\nTransfer Details\n--------------------------------------------");
+                            Console.WriteLine("Id : " + inputID);
+                            Console.WriteLine("From: " + transfer.UserNameFrom);
+                            Console.WriteLine("To: " + transfer.UserNameTo);
+                            //CAST ENUM< LOOK AT ENUMS MR RIGGS + TO STRING STUFF
+                            if (transfer.TransferTypeId == 1)
+                            {
+                                Console.WriteLine("Type: Request");
+                            }
+                            else if (transfer.TransferTypeId == 2)
+                            {
+                                Console.WriteLine("Type: Send");
+                            }
+                            if (transfer.TransferStatusId == 1)
+                            {
+                                Console.WriteLine("Status: Pending");
+                            }
+                            else if (transfer.TransferStatusId == 2)
+                            {
+                                Console.WriteLine("Status: Approved");
+                            }
+                            else if (transfer.TransferStatusId == 3)
+                            {
+                                Console.WriteLine("Status: Rejected");
+                            }
+                            Console.WriteLine("Amount: $" + transfer.Amount.ToString("C2"));
+                            Console.WriteLine("--------------------------------------------");
+                        }
+                    }
                 }
+
                 else if (menuSelection == 3)
                 {
 
@@ -133,20 +166,30 @@ namespace TenmoClient
                     }
                     Console.WriteLine("-------------------------------------------\n");
 
-                    Console.WriteLine("Enter ID of user you are sending to(0 to cancel):");
-                    //WHILE
-                    //TRY CATCH 
-                    //EXCPETION
-                    var recipientID = int.Parse(Console.ReadLine());
-
-                    Console.WriteLine("Enter amount:");
-                    //WHILE
-                    //TRY CATCH 
-                    //EXCPETION
-                    var inputAmount = decimal.Parse(Console.ReadLine());
-
-                    transferServices.TransferMoney(recipientID, inputAmount);
+                   
+                    int recipientID =0 ;
+                    decimal inputAmount = 0;
+                   
+                    bool isSuccessful = false;
+                    while (!isSuccessful)
+                    {
+                        try
+                        {
+                            Console.WriteLine("Enter ID of user you are sending to(0 to cancel):");
+                            recipientID = int.Parse(Console.ReadLine());
+                       
+                            Console.WriteLine("Enter amount:");
+                            inputAmount = decimal.Parse(Console.ReadLine());
+                            transferServices.TransferMoney(recipientID, inputAmount);
+                            isSuccessful = true;
+                        }
+                        catch (Exception)
+                        {
+                            Console.WriteLine("\n******INVALID INPUT******\n");
+                        }
+                    }
                 }
+                
                 else if (menuSelection == 5)
                 {
 
