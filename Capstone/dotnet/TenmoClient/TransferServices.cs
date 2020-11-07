@@ -34,7 +34,7 @@ namespace TenmoClient
             
             else if (!response.IsSuccessful)
             {
-               // Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode + response.Content);
+                //Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode + response.Content);
                 if((int)response.StatusCode == 400)
                 {
                     Console.WriteLine("An error response was received from the server. Can't input a NEGATIVE NUMBER.");
