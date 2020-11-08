@@ -39,7 +39,7 @@ namespace TenmoServer.DAO
             return me.Balance;
         }
 
-        public decimal RejectTransfer(int transferId, Transfer transfer)
+        public Transfer RejectTransfer(int transferId, Transfer transfer)
         {
             try
             {
@@ -59,10 +59,10 @@ namespace TenmoServer.DAO
             {
                 Console.WriteLine("Error getting account info");
             }
-            return transfer.Amount;
+            return null;
         }
 
-        public decimal AcceptTransferRequest(Account sender, Account receiver, Transfer transfer, int transferId)
+        public Transfer AcceptTransferRequest(Account sender, Account receiver, Transfer transfer, int transferId)
         {
             if (receiver.AccountId != 0 && transfer.Amount <= sender.Balance)
             {
@@ -99,7 +99,7 @@ namespace TenmoServer.DAO
             {
                 Console.WriteLine("Invalid Input");
             }
-            return sender.Balance;
+            return null;
         }
 
         public List<Transfer> GetTransferRequests(int userId)

@@ -45,30 +45,13 @@ namespace TenmoClient
                 }
             }
         }
-
-        public void RejectTransfer(int transferId)
+        public Transfer RejectTransfer(Transfer transfer)
         {
-            Transfer t = new Transfer();
-            t.TransferId = transferId;
 
             RestClient client = new RestClient();
-            RestRequest request = new RestRequest(API_BASE_URL + "request/" + transferId);
+            RestRequest request = new RestRequest(API_BASE_URL + "request/" + transfer.TransferId+ "/reject");
             client.Authenticator = new JwtAuthenticator(UserService.GetToken());
-            request.AddJsonBody(t);
-
-            IRestResponse response = client.Put(request);
-        }
-
-        public void AcceptTransfer(int transferId)
-        {
-            Transfer t = new Transfer();
-            t.TransferId = transferId;
-
-            RestClient client = new RestClient();
-            RestRequest request = new RestRequest(API_BASE_URL + "request/" + transferId);
-            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
-            request.AddJsonBody(t);
-
+            request.AddJsonBody(transfer);
             IRestResponse response = client.Put(request);
             if (response.ResponseStatus != ResponseStatus.Completed)
             {
@@ -86,7 +69,34 @@ namespace TenmoClient
                 {
                     Console.WriteLine("An error response was received from the server. INVALID USER ID.");
                 }
+            }  return transfer;
+        }
+
+        public Transfer AcceptTransfer(Transfer transfer)
+        {
+
+            RestClient client = new RestClient();
+            RestRequest request = new RestRequest(API_BASE_URL + "request/" + transfer.TransferId +"/accept");
+            client.Authenticator = new JwtAuthenticator(UserService.GetToken());
+            request.AddJsonBody(transfer);
+            IRestResponse response = client.Put(request);
+            if (response.ResponseStatus != ResponseStatus.Completed)
+            {
+                Console.WriteLine("An error occurred communicating with the server.");
             }
+
+            else if (!response.IsSuccessful)
+            {
+                //Console.WriteLine("An error response was received from the server. The status code is " + (int)response.StatusCode + response.Content);
+                if ((int)response.StatusCode == 400)
+                {
+                    Console.WriteLine("An error response was received from the server. Can't input a NEGATIVE NUMBER.");
+                }
+                else if ((int)response.StatusCode == 404)
+                {
+                    Console.WriteLine("An error response was received from the server. INVALID USER ID.");
+                }
+            }return transfer;
         }
 
         public List<Transfer> GetTransfers()
@@ -109,5 +119,4 @@ namespace TenmoClient
             return response.Data;
         }
     }
-    
 }

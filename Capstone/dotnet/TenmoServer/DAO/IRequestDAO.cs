@@ -9,8 +9,8 @@ namespace TenmoServer.DAO
     public interface IRequestDAO
     {
         decimal RequestTransfer(decimal amountToTransfer, Account someone, Account me);
-        decimal RejectTransfer(int transferId, Transfer transfer);
-        decimal AcceptTransferRequest(Account sender, Account receiver, Transfer transfer, int transferId);
+        Transfer RejectTransfer(int transferId, Transfer transfer);
+        Transfer AcceptTransferRequest(Account sender, Account receiver, Transfer transfer, int transferId);
         List<Transfer> GetTransferRequests(int userId);
         Transfer GetTransferById(int userId, int transferId);
     }

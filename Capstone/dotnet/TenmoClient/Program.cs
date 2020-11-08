@@ -102,10 +102,8 @@ namespace TenmoClient
                 else if (menuSelection == 3)//view pending requests and approve/review
                 {
                     List<Transfer> t = PrintListOfRequests();
-                    int transferId = SelectRequestBasedOnTransferID(t);
+                    Transfer transfer = SelectRequestBasedOnTransferID(t);
 
-                    if(transferId != 0)
-                    {
                         int userSelection;
                         bool isSuccessful = false;
                         while (!isSuccessful)
@@ -120,11 +118,11 @@ namespace TenmoClient
                                         isSuccessful = true;
                                         break;
                                     case 1:
-                                        requestServices.AcceptTransfer(transferId);
+                                        requestServices.AcceptTransfer(transfer);
                                         isSuccessful = true;
                                         break;
                                     case 2:
-                                        requestServices.RejectTransfer(transferId);
+                                        requestServices.RejectTransfer(transfer);
                                         isSuccessful = true;
                                         break;
                                     default:
@@ -137,7 +135,7 @@ namespace TenmoClient
                                 Console.WriteLine("\n******INVALID TRANSFER ID******\n");
                             }
                         }
-                    }       
+                          
                 }
                 else if (menuSelection == 4)//Transfer funds
                 {
@@ -168,9 +166,10 @@ namespace TenmoClient
         //private static methods: for better organization in the program class
         //--------------------------------------------------------------------
 
-        private static int SelectRequestBasedOnTransferID(List<Transfer> t)
+        private static Transfer SelectRequestBasedOnTransferID(List<Transfer> t)
         {
             int inputID = -1;
+            Transfer trans = new Transfer();
             bool inputIdInList = false; //determining if inputId is in the Transfer List "t"
             while (inputID != 0)
             {
@@ -187,6 +186,7 @@ namespace TenmoClient
                     {
                         if (inputID == transfer.TransferId)
                         {
+                            trans = transfer;
                             inputIdInList = true;
                         }
                     }
@@ -203,7 +203,7 @@ namespace TenmoClient
                     Console.WriteLine("\n******INVALID TRANSFER ID******\n");
                 }
             }
-            return inputID;
+            return trans;
         }
 
         private static List<Transfer> PrintListOfRequests()

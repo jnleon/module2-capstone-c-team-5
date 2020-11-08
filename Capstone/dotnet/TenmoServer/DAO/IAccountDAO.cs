@@ -9,7 +9,6 @@ namespace TenmoServer.DAO
     public interface IAccountDAO
     {
         List<Account> GetAccountInfo();
-
         Account GetAccountInfoById(int userId);
     }
 }
