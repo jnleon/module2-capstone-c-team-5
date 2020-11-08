@@ -56,6 +56,7 @@ namespace TenmoServer
             services.AddTransient<IUserDAO>(m => new UserSqlDAO(connectionString));
             services.AddTransient<IAccountDAO>(m => new AccountDAO(connectionString));
             services.AddTransient<ITransferDAO>(m => new TransferDAO(connectionString));
+            services.AddTransient<IRequestDAO>(m => new RequestDAO(connectionString));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

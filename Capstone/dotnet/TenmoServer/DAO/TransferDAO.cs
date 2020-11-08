@@ -16,11 +16,6 @@ namespace TenmoServer.DAO
             connectionString = dbConnectionString;
         }
 
-        //method to transfer money between users... reduce the sender's balance and increase the receiver's balance... return sender balance
-
-        //NO POWER -----------------------------------------------------------------------------------------
-        //ERROR POWER -----------------------------------------------------------------------------------------
-
         public decimal MakeTransfer(decimal amountToTransfer, Account sender, Account receiver)
         {
             if (receiver.AccountId != 0 && amountToTransfer <= sender.Balance)
@@ -57,12 +52,10 @@ namespace TenmoServer.DAO
                 }
             }
             else
-            {
-                
+            {                
                 Console.WriteLine("Invalid Input");
-
             }
-                return sender.Balance;
+            return sender.Balance;
         }
 
         public List<Transfer> GetPastTransfers(int userId)

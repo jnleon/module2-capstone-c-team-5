@@ -15,8 +15,8 @@ namespace TenmoClient
         public void TransferMoney(int userToId, decimal amount)
         {
             Transfer t = new Transfer();
-            t.TransferTypeId = 2;
-            t.TransferStatusId = 2;
+            t.TransferTypeId = 2; //send
+            t.TransferStatusId = 2; //approved
             t.UserFromId = UserService.GetUserId();
             t.UserToId = userToId;
             t.Amount = amount;
@@ -54,6 +54,6 @@ namespace TenmoClient
 
             IRestResponse<List<Transfer>> response = client.Get<List<Transfer>>(request);
             return response.Data;
-        }
+        }     
     }
 }

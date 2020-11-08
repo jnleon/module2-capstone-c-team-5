@@ -48,6 +48,6 @@ namespace TenmoServer.Controllers
             if (string.IsNullOrWhiteSpace(userId)) return null;
             int.TryParse(userId, out int userIdInt);
             return userIdInt;
-        }
+        }        
     }
 }

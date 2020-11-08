@@ -12,6 +12,7 @@ namespace TenmoClient
         private static readonly AccountServices accountServices = new AccountServices();
         private static readonly ServicesThings servicesThings = new ServicesThings();
         private static readonly TransferServices transferServices = new TransferServices();
+        private static readonly RequestServices requestServices = new RequestServices();
 
         static void Main(string[] args)
         {
@@ -75,10 +76,10 @@ namespace TenmoClient
                 Console.WriteLine("");
                 Console.WriteLine("Welcome to TEnmo! Please make a selection: ");
                 Console.WriteLine("1: View your current balance"); //#3 use case - view current balance
-                Console.WriteLine("2: View your past transfers"); //#5 use case - log to see past transfers sent/received
-                Console.WriteLine("3: View your pending requests");
+                Console.WriteLine("2: View your past transfers"); //#5 & #6 use case - log to see past transfers sent/received
+                Console.WriteLine("3: View your pending requests"); //#8 & #9 view pending requests and approve/reject
                 Console.WriteLine("4: Send TE bucks"); //#4 use case - show list of users, enter userID to transfer to, call MakeTransfer method
-                Console.WriteLine("5: Request TE bucks");
+                Console.WriteLine("5: Request TE bucks"); //#7 request a transfer
                 Console.WriteLine("6: Log in as different user");
                 Console.WriteLine("0: Exit");
                 Console.WriteLine("---------");
@@ -98,9 +99,45 @@ namespace TenmoClient
                     PrintDetailsForTransferId(t);
                 }
 
-                else if (menuSelection == 3)
+                else if (menuSelection == 3)//view pending requests and approve/review
                 {
+                    List<Transfer> t = PrintListOfRequests();
+                    int transferId = SelectRequestBasedOnTransferID(t);
 
+                    if(transferId != 0)
+                    {
+                        int userSelection;
+                        bool isSuccessful = false;
+                        while (!isSuccessful)
+                        {
+                            try
+                            {
+                                Console.WriteLine("1: Approve\n2: Reject\n0: Don't approve or reject\n---------\nPlease choose an option:");
+                                userSelection = int.Parse(Console.ReadLine());
+                                switch (userSelection)
+                                {
+                                    case 0:
+                                        isSuccessful = true;
+                                        break;
+                                    case 1:
+                                        requestServices.AcceptTransfer(transferId);
+                                        isSuccessful = true;
+                                        break;
+                                    case 2:
+                                        requestServices.RejectTransfer(transferId);
+                                        isSuccessful = true;
+                                        break;
+                                    default:
+                                        Console.WriteLine("\n******INVALID INPUT******\n");
+                                        break;
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                Console.WriteLine("\n******INVALID TRANSFER ID******\n");
+                            }
+                        }
+                    }       
                 }
                 else if (menuSelection == 4)//Transfer funds
                 {
@@ -108,9 +145,10 @@ namespace TenmoClient
                     TransferFunds();              
                 }
 
-                else if (menuSelection == 5)
+                else if (menuSelection == 5)//log to see past transfers sent and received
                 {
-
+                    PrintListOfUsers();
+                    RequestATransfer();
                 }
                 else if (menuSelection == 6)
                 {
@@ -130,6 +168,85 @@ namespace TenmoClient
         //private static methods: for better organization in the program class
         //--------------------------------------------------------------------
 
+        private static int SelectRequestBasedOnTransferID(List<Transfer> t)
+        {
+            int inputID = -1;
+            bool inputIdInList = false; //determining if inputId is in the Transfer List "t"
+            while (inputID != 0)
+            {
+                try
+                {
+                    Console.WriteLine("-------------------------------------------\nPlease enter transfer ID to approve / reject(0 to cancel): ");
+                    inputID = int.Parse(Console.ReadLine());
+                    if (inputID == 0)
+                    {
+                        continue;
+                    }
+
+                    foreach (Transfer transfer in t)//determining if inputId is in the Transfer List "t"
+                    {
+                        if (inputID == transfer.TransferId)
+                        {
+                            inputIdInList = true;
+                        }
+                    }
+
+                    if (!inputIdInList)//if inputID is not in list.... inform user
+                    {
+                        Console.WriteLine("\n******INVALID TRANSFER ID******\n");
+                        continue;
+                    }
+                    break;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("\n******INVALID TRANSFER ID******\n");
+                }
+            }
+            return inputID;
+        }
+
+        private static List<Transfer> PrintListOfRequests()
+        {
+            Console.WriteLine("\n-------------------------------------------\nPending Transfers");
+            Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2} ", "ID", "TO", "|  Amount"));
+            Console.WriteLine("-------------------------------------------");
+
+            List<Transfer> t = requestServices.GetTransfers();
+            foreach (Transfer transfer in t)
+            {
+                if (transfer.UserFromId == UserService.GetUserId())
+                {
+                    Console.WriteLine(String.Format("{0, 0}\t|  {1,-18}  {2,2:C} ", transfer.TransferId, "To: " + transfer.UserNameTo, "|  " + transfer.Amount.ToString("C2")));
+                }
+            }
+
+            return t;
+        }
+
+        private static void RequestATransfer()
+        {
+            int userId;
+            decimal inputAmount;
+            while (true)
+            {
+                try
+                {
+                    Console.WriteLine("Enter ID of user you are requesting from(0 to cancel):");
+                    userId = int.Parse(Console.ReadLine());
+
+                    Console.WriteLine("Enter amount:");
+                    inputAmount = decimal.Parse(Console.ReadLine());
+                    requestServices.RequestTransfer(userId, inputAmount);
+                    break;
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("\n******INVALID INPUT******\n");
+                }
+            }
+        }
+
         private static void PrintCurrentBalance()
         {
             Account account = accountServices.GetAccount();
@@ -140,7 +257,8 @@ namespace TenmoClient
         {
             int recipientID;
             decimal inputAmount;
-            while (true)
+            int userSelection = -1;
+            while (userSelection != 0)
             {
                 try
                 {
@@ -175,9 +293,9 @@ namespace TenmoClient
 
         private static void PrintDetailsForTransferId(List<Transfer> t)
         {
-            int inputID;
+            int inputID = -1;
             bool inputIdInList = false; //determining if inputId is in the Transfer List "t"
-            while (true)
+            while (inputID != 0)
             {
                 try
                 {
@@ -192,17 +310,16 @@ namespace TenmoClient
                     }
                     if (!inputIdInList)//if inputID is not in list.... inform user
                     {
-                        Console.WriteLine("\n******INVALID TRANSFER ID - ******\n");
+                        Console.WriteLine("\n******INVALID TRANSFER ID******\n");
+                        continue;
                     }
                     break;
                 }
                 catch (Exception)
                 {
-                    Console.WriteLine("\n******INVALID INPUT - PLEASE ENTER VALID TRANSFER ID******\n");
+                    Console.WriteLine("\n******INVALID TRANSFER ID******\n");
                 }
-
             }
-
            
             foreach (Transfer transfer in t)
             {
