@@ -57,13 +57,12 @@ namespace TenmoServer.Controllers
         [HttpPut("{id}/reject")]
         public ActionResult<Transfer> RejectTransfer(Transfer transfer)
         {
-            return requestDAO.RejectTransfer(transfer.TransferId, transfer);
+            return requestDAO.RejectTransfer(transfer);
         }
 
         [HttpPut("{id}/accept")]
-        public ActionResult<Transfer> AcceptTransfer(Transfer transfer)//I added "{transferId}" & "int transferId" & made it a parameter in the AcceptTransferRequest
+        public ActionResult<Transfer> AcceptTransfer(Transfer transfer)
         {
-            Console.WriteLine("Hello");
             Account sender = accountDAO.GetAccountInfoById(transfer.UserFromId);
             Account receiver = accountDAO.GetAccountInfoById(transfer.UserToId);
 
@@ -71,7 +70,7 @@ namespace TenmoServer.Controllers
             {
                 return NotFound();
             }
-            return requestDAO.AcceptTransferRequest(sender, receiver, transfer, transfer.TransferId);
+            return requestDAO.AcceptTransferRequest(sender, receiver, transfer);
         }
     }
 }

@@ -103,41 +103,9 @@ namespace TenmoClient
                 {
                     List<Transfer> t = PrintListOfRequests();
                     Transfer transfer = SelectRequestBasedOnTransferID(t);
-
-                        int userSelection;
-                        bool isSuccessful = false;
-                        while (!isSuccessful)
-                        {
-                            try
-                            {
-                                Console.WriteLine("1: Approve\n2: Reject\n0: Don't approve or reject\n---------\nPlease choose an option:");
-                                userSelection = int.Parse(Console.ReadLine());
-                                switch (userSelection)
-                                {
-                                    case 0:
-                                        isSuccessful = true;
-                                        break;
-                                    case 1:
-                                        requestServices.AcceptTransfer(transfer);
-                                        isSuccessful = true;
-                                        break;
-                                    case 2:
-                                        requestServices.RejectTransfer(transfer);
-                                        isSuccessful = true;
-                                        break;
-                                    default:
-                                        Console.WriteLine("\n******INVALID INPUT******\n");
-                                        break;
-                                }
-                            }
-                            catch (Exception)
-                            {
-                                Console.WriteLine("\n******INVALID TRANSFER ID******\n");
-                            }
-                        }
-                          
+                    ApproveOrRejectRequest(transfer);
                 }
-                else if (menuSelection == 4)//Transfer funds
+                else if (menuSelection == 4)//send funds to user by ID
                 {
                     PrintListOfUsers();
                     TransferFunds();              
@@ -162,9 +130,50 @@ namespace TenmoClient
             }
         }
 
+
+
+
         //--------------------------------------------------------------------
         //private static methods: for better organization in the program class
         //--------------------------------------------------------------------
+
+        private static void ApproveOrRejectRequest(Transfer transfer)
+        {
+            if (transfer.TransferId != 0) //testing if the user wants to cancel their menu selection
+            {
+                int userSelection;
+                bool isSuccessful = false;
+                while (!isSuccessful)
+                {
+                    try
+                    {
+                        Console.WriteLine("1: Approve\n2: Reject\n0: Don't approve or reject\n---------\nPlease choose an option:");
+                        userSelection = int.Parse(Console.ReadLine());
+                        switch (userSelection)
+                        {
+                            case 0:
+                                isSuccessful = true;
+                                break;
+                            case 1:
+                                requestServices.AcceptTransfer(transfer);
+                                isSuccessful = true;
+                                break;
+                            case 2:
+                                requestServices.RejectTransfer(transfer);
+                                isSuccessful = true;
+                                break;
+                            default:
+                                Console.WriteLine("\n******INVALID INPUT******\n");
+                                break;
+                        }
+                    }
+                    catch (Exception)
+                    {
+                        Console.WriteLine("\n******INVALID TRANSFER ID******\n");
+                    }
+                }
+            }
+        }
 
         private static Transfer SelectRequestBasedOnTransferID(List<Transfer> t)
         {
@@ -308,7 +317,11 @@ namespace TenmoClient
                             inputIdInList = true;
                         }
                     }
-                    if (!inputIdInList)//if inputID is not in list.... inform user
+                    if (inputID == 0)
+                    {
+                        continue;
+                    }
+                    else if (!inputIdInList)//if inputID is not in list.... inform user
                     {
                         Console.WriteLine("\n******INVALID TRANSFER ID******\n");
                         continue;

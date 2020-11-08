@@ -39,7 +39,7 @@ namespace TenmoServer.DAO
             return me.Balance;
         }
 
-        public Transfer RejectTransfer(int transferId, Transfer transfer)
+        public Transfer RejectTransfer(Transfer transfer)
         {
             try
             {
@@ -50,7 +50,7 @@ namespace TenmoServer.DAO
                                                     "SET transfer_status_id = 3 " +
                                                     "WHERE transfer_id = @transfer_id;", conn);
 
-                    cmd.Parameters.AddWithValue("@transfer_id", transferId);
+                    cmd.Parameters.AddWithValue("@transfer_id", transfer.TransferId);
 
                     SqlDataReader reader = cmd.ExecuteReader();
                 }
@@ -62,7 +62,7 @@ namespace TenmoServer.DAO
             return null;
         }
 
-        public Transfer AcceptTransferRequest(Account sender, Account receiver, Transfer transfer, int transferId)
+        public Transfer AcceptTransferRequest(Account sender, Account receiver, Transfer transfer)
         {
             if (receiver.AccountId != 0 && transfer.Amount <= sender.Balance)
             {
@@ -84,7 +84,7 @@ namespace TenmoServer.DAO
                         cmd.Parameters.AddWithValue("@senderId", sender.UserId);
                         cmd.Parameters.AddWithValue("@receiverId", receiver.UserId);
 
-                        cmd.Parameters.AddWithValue("@transfer_id", transferId);
+                        cmd.Parameters.AddWithValue("@transfer_id", transfer.TransferId);
                         cmd.Parameters.AddWithValue("@amount", transfer.Amount);
 
                         SqlDataReader reader = cmd.ExecuteReader();
